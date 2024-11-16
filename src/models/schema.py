@@ -1,5 +1,6 @@
 from pydantic import BaseModel
-from typing_extensions import Optional
+from typing import Optional
+from datetime import datetime
 
 
 class UserLogin(BaseModel):
@@ -22,4 +23,16 @@ class Product(BaseModel):
     price:float
     quantity:int
     categoryId:str
+
+class ProductIn(Product):
     image:Optional[bytes]| None = None
+
+class ProductOut(Product):
+    id:str
+    imageUrl:str
+    category:str
+    reviews:Optional[list] | []
+    orderItems:Optional[list] | []
+    cartItems:Optional[list] | []
+    createdAt:datetime
+    updatedAt:datetime
