@@ -58,4 +58,5 @@ async def initiate_stk_push(amount: float, phone_number: str, order_id: str) -> 
         )
         response.raise_for_status()
         result = response.json()
-        return result.get("ResponseCode") == "0"  # 0 indicates success
+        print(result)
+        return result

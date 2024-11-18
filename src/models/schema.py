@@ -30,9 +30,9 @@ class ProductIn(Product):
 class ProductOut(Product):
     id:str
     imageUrl:str
-    reviews:Optional[list] | []
-    orderItems:Optional[list] | []
-    cartItems:Optional[list] | []
+    reviews:Optional[list]  = []
+    orderItems:Optional[list] = []
+    cartItems:Optional[list] = []
     createdAt:datetime
     updatedAt:datetime
     availableQuantity:int

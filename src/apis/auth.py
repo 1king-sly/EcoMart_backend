@@ -14,7 +14,7 @@ router = APIRouter()
 
 @router.post('/login')
 async def login(user: UserLogin):
-    user_db = prisma.user.find_unique(
+    user_db = await prisma.user.find_unique(
         where={
             "email": user.email,
         }
@@ -35,10 +35,11 @@ async def login(user: UserLogin):
 
 @router.post('/register', response_model=UserOut)
 async def register(user: UserRegister):
+    print(user)
     try:
         hashed_password = hash_password(user.password)
 
-        new_user = prisma.user.create(
+        new_user = await prisma.user.create(
             data={
                 "email": user.email,
                 "name": user.name,

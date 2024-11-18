@@ -14,7 +14,7 @@ cloudinary.config(
 
 async def upload_image(image: UploadFile):
     try:
-        upload_result = upload(image.file)
+        upload_result = upload(image.file,folder="ecomart")
         file_url = upload_result['secure_url']
         return file_url
     except Exception as e:

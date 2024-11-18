@@ -42,7 +42,15 @@ async def create_order(order: CreateOrderRequest,current_user=Depends(get_curren
                         "price": product.price,
                     }
                 ]
-            }
+            },
+            "payment": {
+                "create": {
+                    "amount": float(order.totalPrice),
+                    "status": "COMPLETED",
+                    "provider": "M-Pesa",
+                    "transactionId": order.productId,
+                }
+            },
 
         },
     include = {"items": True},
@@ -59,4 +67,59 @@ async def create_order(order: CreateOrderRequest,current_user=Depends(get_curren
         )
 
     return PaymentResponse(success=True, message="Order created successfully", order_id=order.id)
-    
+
+
+@router.get("/")
+async def get_orders(current_user=Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=404,detail="User does not exist")
+    if current_user.role != "ADMIN":
+        raise HTTPException(status_code=403,detail="Only Admin can get orders")
+
+    orders = prisma.order.find_many(
+        order_by={
+            "createdAt":"desc"
+        },
+        include={
+            "items":True,
+        }
+    )
+
+    return orders
+
+@router.get("/me")
+async def get_orders_me(current_user=Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=404,detail="User does not exist")
+
+    orders = prisma.order.find_many(
+        where={
+            "userId":current_user.id,
+        },
+        order_by={
+            "createdAt":"desc"
+        },
+        include={
+            "items":True,
+        }
+    )
+
+    return orders
+
+@router.get("/{order_id}")
+async def get_order(order_id:str, current_user=Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=404,detail="User does not exist")
+
+    order = prisma.order.find_unique(
+        where={
+            "id":order_id,
+        },
+        include={
+            "items":True,
+        }
+    )
+    if not order:
+        raise HTTPException(status_code=404,detail="Order does not exist")
+
+    return order
