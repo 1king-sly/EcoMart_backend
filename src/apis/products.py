@@ -9,7 +9,7 @@ from src.utils.cloudinary_config import upload_image
 
 router = APIRouter
 
-@router.post('/',response_model=ProductOut)
+@router.post("/",response_model=ProductOut)
 async def create_product(product:ProductIn,current_user=Depends(get_current_user)):
     if not current_user:
         raise HTTPException(status_code=400, detail="User Does not exist")
@@ -29,8 +29,9 @@ async def create_product(product:ProductIn,current_user=Depends(get_current_user
                 "description": product.description,
                 "price": float(product.price),
                 "quantity": product.quantity,
-                "categoryId": product.categoryId,
+                "category": product.category,
                 "imageUrl": image_url,
+                "availableQuantity":product.quantity
             }
         )
 
@@ -60,5 +61,35 @@ async def get_product(product_id:str):
     return product
 
 
+@router.put("/{product_id}",response_model=ProductOut)
+async def update_product(product_id:str,product:ProductOut,current_user=Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=400, detail="User Does not exist")
 
-    
+    if current_user.role != "ADMIN":
+        raise HTTPException(status_code=401, detail="Only Admin can update products")
+
+    updated_product = prisma.product.update(
+        where={
+            "id":product_id,
+        },
+        data=product.model_dump(exclude_unset=True)
+    )
+    return updated_product
+
+
+@router.delete("/{product_id}",response_model=ProductOut)
+async def delete_product(product_id:str,current_user=Depends(get_current_user)):
+    if not current_user:
+        raise HTTPException(status_code=400, detail="User Does not exist")
+    if current_user.role != "ADMIN":
+        raise HTTPException(status_code=401, detail="Only Admin can delete products")
+
+    delete_product = prisma.product.delete(
+        where={
+            "id":product_id,
+        }
+    )
+
+    return delete_product
+

@@ -22,7 +22,7 @@ class Product(BaseModel):
     description:Optional[str]| None = None
     price:float
     quantity:int
-    categoryId:str
+    category:str
 
 class ProductIn(Product):
     image:Optional[bytes]| None = None
@@ -30,9 +30,21 @@ class ProductIn(Product):
 class ProductOut(Product):
     id:str
     imageUrl:str
-    category:str
     reviews:Optional[list] | []
     orderItems:Optional[list] | []
     cartItems:Optional[list] | []
     createdAt:datetime
     updatedAt:datetime
+    availableQuantity:int
+
+class CreateOrderRequest(BaseModel):
+    userId: str
+    productId: str
+    quantity: int
+    totalPrice: float
+    addressId:Optional[str]| None = None
+
+class PaymentResponse(BaseModel):
+    success: bool
+    message: str
+    order_id: str = None

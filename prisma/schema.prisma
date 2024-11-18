@@ -31,28 +31,29 @@ model User {
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  name        String
-  description String?
-  price       Float
-  quantity    Int
-  imageUrl    String
-  categoryId  String
-  category    Category    @relation(fields: [categoryId], references: [id])
-  reviews     Review[]
-  orderItems  OrderItem[]
-  cartItems   CartItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                String          @id @default(cuid())
+  name              String
+  description       String?
+  price             Float
+  quantity          Int
+  availableQuantity Int
+  imageUrl          String
+  // categoryId        String
+  category          ProductCategory
+  reviews           Review[]
+  orderItems        OrderItem[]
+  cartItems         CartItem[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }
 
 model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique
+  id          String   @id @default(cuid())
+  name        String   @unique
   description String?
-  products    Product[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  // products    Product[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Order {
@@ -61,8 +62,12 @@ model Order {
   user        User        @relation(fields: [userId], references: [id])
   status      OrderStatus @default(PENDING)
   totalAmount Float
+  addressId   String?
+  address     Address?    @relation(fields: [addressId], references: [id])
   items       OrderItem[]
   payment     Payment?
+  shippedAt   DateTime?
+  deliveredAt DateTime?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
@@ -135,6 +140,8 @@ model Address {
   isDefault Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Order Order[]
 }
 
 enum Role {
@@ -156,4 +163,10 @@ enum PaymentStatus {
   COMPLETED
   FAILED
   REFUNDED
+}
+
+enum ProductCategory {
+  DRINKS
+  CLOTHES
+  ACCESSORIES
 }
