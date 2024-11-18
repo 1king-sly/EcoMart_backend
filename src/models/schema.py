@@ -15,3 +15,11 @@ class UserOut(BaseModel):
     email:str
     name:Optional[str]| None = None
     role:Optional[str]| None = None
+
+class Product(BaseModel):
+    name: str
+    description:Optional[str]| None = None
+    price:float
+    quantity:int
+    categoryId:str
+    image:Optional[bytes]| None = None
